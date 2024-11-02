@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ interface Errors {
 }
 
 const RegistrationPage = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -29,14 +31,12 @@ const RegistrationPage = () => {
   const validateForm = (): Errors => {
     const newErrors: Errors = {};
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
@@ -51,16 +51,19 @@ const RegistrationPage = () => {
     const newErrors = validateForm();
 
     if (Object.keys(newErrors).length === 0) {
-      // Here you would typically make an API call to register the user
-      const { data } = await axios.post<{ success: boolean; token: string }>("http://192.168.77.90:5000/api/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      try {
+        const { data } = await axios.post<{ success: boolean; token: string }>("http://192.168.77.90:5000/api/login", {
+          email: formData.email,
+          password: formData.password,
+        });
 
-      localStorage.setItem("token", data.token);
-
-      setSuccess(true);
-      setErrors({});
+        localStorage.setItem("token", data.token);
+        setSuccess(true);
+        setErrors({});
+        router.push("/dashboard");
+      } catch (error) {
+        setErrors({ email: "Invalid email or password" });
+      }
     } else {
       setErrors(newErrors);
       setSuccess(false);
@@ -83,10 +86,7 @@ const RegistrationPage = () => {
           <CardDescription>Enter your details to login</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -119,10 +119,7 @@ const RegistrationPage = () => {
               </Alert>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-            >
+            <Button type="submit" className="w-full">
               Login
             </Button>
           </form>
@@ -130,10 +127,7 @@ const RegistrationPage = () => {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
             Do not have an account?{" "}
-            <a
-              href="/register"
-              className="text-blue-600 hover:underline"
-            >
+            <a href="/register" className="text-blue-600 hover:underline">
               Register here
             </a>
           </p>

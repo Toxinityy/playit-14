@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -64,6 +65,7 @@ const fetchKelurahan = async (kecamatanId: number) => {
 };
 
 const RegistrationPage = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -184,20 +186,26 @@ const RegistrationPage = () => {
     const newErrors = validateForm();
 
     if (Object.keys(newErrors).length === 0) {
-      // Here you would typically make an API call to register the user
+      try {
+        const { data } = await axios.post("http://192.168.77.90:5000/api/register", {
+          nama: formData.username,
+          email: formData.email,
+          password: formData.password,
+          alamat_resmi: formData.address,
+          kelurahan_id: selectedKelurahanId,
+        });
 
-      const { data } = await axios.post("http://192.168.77.90:5000/api/register", {
-        nama: formData.username,
-        email: formData.email,
-        password: formData.password,
-        alamat_resmi: formData.address,
-        kelurahan_id: selectedKelurahanId,
-      });
-
-      console.log(formData);
-      console.log(selectedKelurahanId);
-      setSuccess(true);
-      setErrors({});
+        setSuccess(true);
+        setErrors({});
+        
+        // Redirect to the login page after successful registration
+        setTimeout(() => {
+          router.push("/login");
+        }, 3000);
+      } catch (error) {
+        console.error("Registration error:", error);
+        // Handle any errors that occur during registration
+      }
     } else {
       setErrors(newErrors);
       setSuccess(false);
