@@ -1,10 +1,11 @@
-'use client';
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+"use client";
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import axios from "axios";
 
 interface FormData {
   email: string;
@@ -18,8 +19,8 @@ interface Errors {
 
 const RegistrationPage = () => {
   const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState<Errors>({});
@@ -30,29 +31,36 @@ const RegistrationPage = () => {
 
     // Email validation
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = "Please enter a valid email";
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = "Password must be at least 8 characters";
     }
 
     return newErrors;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newErrors = validateForm();
 
     if (Object.keys(newErrors).length === 0) {
+      // Here you would typically make an API call to register the user
+      const { data } = await axios.post<{ success: boolean; token: string }>("http://192.168.77.90:5000/api/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", data.token);
+
       setSuccess(true);
       setErrors({});
-      // Here you would typically make an API call to register the user
     } else {
       setErrors(newErrors);
       setSuccess(false);
@@ -75,7 +83,10 @@ const RegistrationPage = () => {
           <CardDescription>Enter your details to register</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -84,11 +95,9 @@ const RegistrationPage = () => {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={errors.email ? 'border-red-500' : ''}
+                className={errors.email ? "border-red-500" : ""}
               />
-              {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -99,30 +108,32 @@ const RegistrationPage = () => {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={errors.password ? 'border-red-500' : ''}
+                className={errors.password ? "border-red-500" : ""}
               />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
             </div>
 
             {success && (
               <Alert className="bg-green-50">
-                <AlertDescription className="text-green-600">
-                  Registration successful! You can now login.
-                </AlertDescription>
+                <AlertDescription className="text-green-600">Registration successful! You can now login.</AlertDescription>
               </Alert>
             )}
 
-            <Button type="submit" className="w-full">
+            <Button
+              type="submit"
+              className="w-full"
+            >
               Login
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">
-            Do not have an account?{' '}
-            <a href="/register" className="text-blue-600 hover:underline">
+            Do not have an account?{" "}
+            <a
+              href="/register"
+              className="text-blue-600 hover:underline"
+            >
               Register here
             </a>
           </p>
