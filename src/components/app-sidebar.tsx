@@ -27,7 +27,12 @@ const items = [
 		icon: Home
 	},
 	{
-		title: "Data Input",
+		title: "Menu",
+		url: "",
+		icon: Database
+	},
+    {
+		title: "Ingredients",
 		url: "",
 		icon: Database
 	},
