@@ -15,9 +15,7 @@ interface SelectedIngredient extends Ingredient {
 const AddMenuForm = () => {
 	const [menuName, setMenuName] = useState("")
 	const [ingredients, setIngredients] = useState<Ingredient[]>([])
-	const [selectedIngredients, setSelectedIngredients] = useState<
-		SelectedIngredient[]
-	>([])
+	const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>([])
 	const [cost, setCost] = useState<number>(0)
 
 	// Fetch ingredients from API
@@ -61,17 +59,38 @@ const AddMenuForm = () => {
 		)
 	}
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-		console.log({
-			menuName,
-			selectedIngredients,
-			cost
-		})
-		setMenuName("")
-		setSelectedIngredients([])
-		setCost(0)
-	}
+	const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        
+        const token = localStorage.getItem("token")
+
+        const payload = {
+            nama: menuName, // Use menuName as the "nama" field
+            harga: cost, // Use cost as the "harga" field
+            berat: 10, // Berat value
+            bahan: selectedIngredients.map((ingredient) => ({
+                bahan_id: ingredient.bahan_id, // Use bahan_id
+                kuantitas: ingredient.grams // Use grams as kuantitas
+            }))
+        }
+        
+        try {
+            const response = await axios.post("http://192.168.77.90:5000/api/menu", payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log("Menu added successfully:", response.data);
+        } catch (error) {
+            console.error("Error adding menu:", error);
+        }
+    
+        // Reset the form
+        setMenuName("")
+        setSelectedIngredients([])  
+        setCost(0)
+    }
+    
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
@@ -106,7 +125,7 @@ const AddMenuForm = () => {
 					<option key="default" value="">
 						Select ingredient
 					</option>
-					{ingredients?.length ? (
+					{ingredients.length ? (
 						ingredients.map((ingredient) => (
 							<option key={`ingredient-${ingredient.bahan_id}`} value={ingredient.bahan_id}>
 								{ingredient.nama}
