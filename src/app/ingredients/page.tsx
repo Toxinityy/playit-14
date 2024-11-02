@@ -88,6 +88,12 @@ const BahanPage = () => {
 					<SidebarTrigger className="-ml-1" />
 				</header>
 				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="max-w-3xl mx-auto p-6">
+          <h2 className="text-3xl font-bold mb-4">Manage Ingredients</h2>
+          <p className="text-lg text-gray-600 mb-6">
+            Keep your ingredient inventory up-to-date by viewing, adding, and managing all items used in menu preparation. This helps maintain accuracy in ingredient quantities and costs, ensuring efficient inventory management.
+          </p>
+        </div>
 					<div className="flex justify-center">
 						<div className="w-1/2 pt-8">
 							{!showAddForm ? (

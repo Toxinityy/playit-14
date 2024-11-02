@@ -1,4 +1,4 @@
-import { Home, Database ,Bot, History, ChevronDown } from "lucide-react"
+import { Home, Bot, ChefHat, Utensils } from "lucide-react"
 
 import {
 	Sidebar,
@@ -12,13 +12,6 @@ import {
 	SidebarMenuItem
 } from "@/components/ui/sidebar"
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-
 // Menu items.
 const items = [
 	{
@@ -29,12 +22,12 @@ const items = [
 	{
 		title: "Menu",
 		url: "/menu",
-		icon: Database
+		icon: Utensils
 	},
     {
 		title: "Ingredients",
 		url: "/ingredients",
-		icon: Database
+		icon: ChefHat
 	},
 	{
 		title: "Ai Prediction",
@@ -46,28 +39,6 @@ const items = [
 export function AppSidebar() {
 	return (
 		<Sidebar>
-			<SidebarHeader>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<SidebarMenuButton>
-									Select Workspace
-									<ChevronDown className="ml-auto" />
-								</SidebarMenuButton>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-								<DropdownMenuItem>
-									<span>Acme Inc</span>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<span>Acme Corp.</span>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</SidebarMenuItem>
-				</SidebarMenu>
-			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Main Menu</SidebarGroupLabel>
