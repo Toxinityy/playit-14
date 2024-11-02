@@ -37,11 +37,6 @@ const items = [
 		icon: Database
 	},
 	{
-		title: "History",
-		url: "#",
-		icon: History
-	},
-	{
 		title: "Ai Prediction",
 		url: "/prediction",
 		icon: Bot
