@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import PredictionAnalysis from "@/components/predictionAnalysis";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,13 +45,11 @@ const MenuCard: React.FC<{
 };
 
 // Main MenuCardList Component
-const MenuCardList: React.FC = () => {
+const MenuCardList: React.FC<{ setAnalyzeResult: (data: any) => void }> = ({ setAnalyzeResult }) => {
   const [menus, setMenus] = useState<Menu[]>([]);
   const [selectedMenus, setSelectedMenus] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [analyzeResult, setAnalyzeResult] = useState();
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -78,61 +77,33 @@ const MenuCardList: React.FC = () => {
   }, []);
 
   const handleSelectMenu = (menuName: string) => {
-    setSelectedMenus((prev) => {
-      if (prev.includes(menuName)) {
-        return prev.filter((name) => name !== menuName);
-      } else {
-        return [...prev, menuName];
-      }
-    });
+    setSelectedMenus((prev) => prev.includes(menuName) ? prev.filter((name) => name !== menuName) : [...prev, menuName]);
   };
 
-  // Fetch dan cek selectedMenus disini
   const handleAnalyzeClick = async () => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      return;
+    setLoading(true);
+  
+    try {
+      const { data } = await axios.post(
+        "http://192.168.77.90:5000/api/prediction/quantity",
+        { menu: selectedMenus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      console.log("Prediction data:", data);
+  
+      setAnalyzeResult(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching prediction:", err);
+      setError("Failed to fetch prediction data.");
+    } finally {
+      setLoading(false);
     }
-    const { data } = await axios.post(
-      "http://192.168.77.90:5000/api/prediction/quantity",
-      {
-        menu: selectedMenus,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    setAnalyzeResult(data);
   };
+  
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <p className="text-red-500">Error loading menus:</p>
-        <p className="text-red-700 font-semibold">{error}</p>
-        <button
-          onClick={() => {
-            setError(null);
-            setLoading(true);
-          }}
-          className="mt-4 text-blue-600 hover:underline"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <Loader2 className="h-8 w-8 animate-spin text-blue-600" />;
 
   return (
     <div className="space-y-4">
@@ -141,54 +112,37 @@ const MenuCardList: React.FC = () => {
           <h2 className="text-2xl font-bold">Available Menus</h2>
           <p className="text-muted-foreground">Select the menus you'd like to analyze</p>
         </div>
-        {selectedMenus.length > 0 && (
-          <div className="text-sm text-blue-600">
-            {selectedMenus.length} menu{selectedMenus.length !== 1 ? "s" : ""} selected
-          </div>
-        )}
+        {selectedMenus.length > 0 && <span>{selectedMenus.length} selected</span>}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {menus.map((menu) => (
-          <MenuCard
-            key={menu.menu_id}
-            menu={menu}
-            selected={selectedMenus.includes(menu.nama)}
-            onSelect={handleSelectMenu}
-          />
+          <MenuCard key={menu.menu_id} menu={menu} selected={selectedMenus.includes(menu.nama)} onSelect={handleSelectMenu} />
         ))}
       </div>
 
-      {/* Analyze Button */}
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={handleAnalyzeClick}
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-        >
-          Analyze
-        </button>
-      </div>
+      <button onClick={handleAnalyzeClick} className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+        Analyze
+      </button>
     </div>
   );
 };
 
 export default function Menu() {
+  const [analyzeResult, setAnalyzeResult] = useState(null);
+
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "19rem",
-        } as React.CSSProperties}
-      >
-        <AppSidebar />
-        <SidebarInset className='bg-gradient-to-t from-primary/10 to-background min-h-screen'>
-          <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-          </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <MenuCardList />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    );
+    <SidebarProvider style={{ "--sidebar-width": "19rem" } as React.CSSProperties}>
+      <AppSidebar />
+      <SidebarInset className="bg-gradient-to-t from-primary/10 to-background min-h-screen">
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <MenuCardList setAnalyzeResult={setAnalyzeResult} />
+          {analyzeResult && <PredictionAnalysis predictions={analyzeResult} />}
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }
