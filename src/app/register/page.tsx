@@ -12,6 +12,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   username: string;
+  address: string;
 }
 
 interface Errors {
@@ -19,6 +20,7 @@ interface Errors {
   password?: string;
   confirmPassword?: string;
   username?: string;
+  address?: string;
 }
 
 interface Provinsi {
@@ -67,6 +69,7 @@ const RegistrationPage = () => {
     password: "",
     confirmPassword: "",
     username: "",
+    address: "",
   });
 
   const [selectedKelurahanId, setSelectedKelurahanId] = useState<number>();
@@ -168,6 +171,11 @@ const RegistrationPage = () => {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
+    // Confirm Address validation
+    if (!formData.address) {
+      newErrors.confirmPassword = "Please enter your address";
+    }
+
     return newErrors;
   };
 
@@ -182,7 +190,7 @@ const RegistrationPage = () => {
         nama: formData.username,
         email: formData.email,
         password: formData.password,
-        alamat_resmi: "jalan dodo no.5",
+        alamat_resmi: formData.address,
         kelurahan_id: selectedKelurahanId,
       });
 
@@ -328,6 +336,19 @@ const RegistrationPage = () => {
                   );
                 })}
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="username">Address</Label>
+              <Input
+                id="address"
+                name="address"
+                type="text"
+                value={formData.address}
+                onChange={handleChange}
+                className={errors.username ? "border-red-500" : ""}
+              />
+              {errors.username && <p className="text-sm text-red-500">{errors.username}</p>}
             </div>
 
             <div className="space-y-2">
