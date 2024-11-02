@@ -41,13 +41,9 @@ type Bahan = {
 };
 
 export function ManageMenu() {
-<<<<<<< HEAD
   // This is to ensure that the component only renders on the client side.
   const [isMounted, setIsMounted] = React.useState(false);
   const [menus, setMenus] = useState<Menu[]>([]);
-=======
-	const [isMounted, setIsMounted] = React.useState(false)
->>>>>>> 060cafebf8b4f3c8a8d86c06b8d87ffbd1e116de
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -61,13 +57,9 @@ export function ManageMenu() {
         },
       });
 
-<<<<<<< HEAD
       setMenus(data);
     };
     fetchData();
-=======
-	if (!isMounted) return null
->>>>>>> 060cafebf8b4f3c8a8d86c06b8d87ffbd1e116de
 
     setIsMounted(true);
   }, []);
