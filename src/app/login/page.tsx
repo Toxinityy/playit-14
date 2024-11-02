@@ -79,8 +79,8 @@ const RegistrationPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>Enter your details to register</CardDescription>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Enter your details to login</CardDescription>
         </CardHeader>
         <CardContent>
           <form
@@ -115,7 +115,7 @@ const RegistrationPage = () => {
 
             {success && (
               <Alert className="bg-green-50">
-                <AlertDescription className="text-green-600">Registration successful! You can now login.</AlertDescription>
+                <AlertDescription className="text-green-600">Login Successful</AlertDescription>
               </Alert>
             )}
 
