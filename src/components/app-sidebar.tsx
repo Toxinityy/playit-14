@@ -28,12 +28,12 @@ const items = [
 	},
 	{
 		title: "Menu",
-		url: "",
+		url: "/menu",
 		icon: Database
 	},
     {
 		title: "Ingredients",
-		url: "",
+		url: "/ingredients",
 		icon: Database
 	},
 	{
@@ -43,7 +43,7 @@ const items = [
 	},
 	{
 		title: "Ai Prediction",
-		url: "#",
+		url: "/prediction",
 		icon: Bot
 	},
 ]
